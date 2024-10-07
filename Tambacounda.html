@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambacounda</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Tambacounda, comme d'autres zones du Sénégal, est caractérisée par sa diversité ethnique. Depuis l'indépendance, elle a connu des migrations internes, une urbanisation croissante et des influences modernes. Les Mandingues, originaires de l'ancien empire du Mali, constituent le groupe majoritaire, tandis que les Peuls, traditionnellement nomades, se sont sédentarisés. Les Soninkés partagent des traits culturels avec les Mandingues, et des vagues migratoires ont vu l'arrivée de Wolofs, Sérères et Diolas. L'agriculture y est l'activité économique principale, tandis que les pratiques culturelles incluent des rituels comme le Kankourang et des cérémonies de mariage et de circoncision.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Le puits des femmes de Goundiour</li>
+                <li>Le puits de Khéranetara</li>
+                <li>Le puits de Tonsocolong</li> 
+				<li>Le puits de Sanka Niani</li>
+				<li>Le puits de Foulacolong</li>
+                <li>Le puits Colomba à Maka</li>
+                <li>Le puits du pont ferroviaire de Tambacounda</li> 
+				<li>Le marigot de Goundiour</li>
+				<li>Le marigot de Kirangue</li>
+				<li>Le marigot de simenti</li>
+        </div>
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="TC1.jpg" data-lightbox="gallery" data-title="Galerie Tambacounda">
+                    <img src="TC1.jpg" alt="Galerie Tambacounda" class="gallery-image">
+                </a>
+                <a href="TC2.jpg" data-lightbox="gallery" data-title="Galerie Tambacounda">
+                    <img src="TC2.jpg" alt="Galerie Tambacounda" class="gallery-image">
+                </a>
+                <a href="TC3.jpg" data-lightbox="gallery" data-title="Galerie Tambacounda">
+                    <img src="TC3.jpg" alt="Galerie Tambacounda" class="gallery-image">
+                </a>
+				<a href="TC4.jpg" data-lightbox="gallery" data-title="Galerie Tambacounda">
+                    <img src="TC4.jpg" alt="Galerie Tambacounda" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([ 13.7701,-13.6670], 8.5); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Le puits des femmes de Goundiour",
+                "lat": 13.977111,
+                "lon": -14.425722,
+                "description": "Le puits des femmes de Goundiour, situé à proximité du village éponyme, est marqué par un épisode tragique au cours duquel des femmes et des enfants, pour échapper aux assaillants du roi Alboury Ndiaye, se jetèrent dans ses eaux. Seuls ceux abrités dans le Tato furent sauvés. Chaque année, les ossements réapparaissent durant l'hivernage, rappelant l’importance historique et spirituelle de ce lieu. Il incarne des valeurs de solidarité et de dignité féminine, tout en portant le nom d’un village témoin de cette histoire.",
+                "image": "TC1.jpg"
+            },
+            {
+                "name": "Le puits de Khéranetara",
+                "lat":  13.846778,
+                "lon": -14.486722,
+                "description": "Le puits de Ndiambour Socé, creusé pour répondre aux besoins en eau de la population, présente un phénomène mystique : l'eau devient introuvable pour les étrangers, renforçant ainsi la symbolique de protection et d’appartenance exclusive à la communauté locale.",
+                "image": "TC2.jpg"
+            },
+            {
+                "name": "Le puits de Tonsocolong",
+                "lat": 13.847250,
+                "lon": -14.487083,
+                "description": "Ce puits mystique, situé non loin de Khéranetara, revêt une importance culturelle et religieuse. Il est utilisé pour des cérémonies rituelles et sert de lieu de pèlerinage. Avec sa profondeur inestimable et les créatures qu'il abrite, il est souvent mentionné dans les traditions locales comme un site historique clé.",
+                "image": "TC.jpg"
+            },
+            {
+                "name": "Le puits de Sanka Niani",
+                "lat": 13.848000,
+                "lon": -14.487861,
+                "description": "Le puits de Sanka Niani, situé près d'une montagne sacrée et du village de Tonsocolong, est un site rituel majeur où des offrandes et des prières sont effectuées sous la direction de marabouts ou de chefs religieux traditionnels.",
+                "image": "TC4.jpg"
+            },
+            {
+                "name": "Le puits de Foulacolong",
+                "lat":  13.717623,
+                "lon": -14.699194,
+                "description": "Le puits de Foulacolong, creusé par les habitants de Ndiambour Socé mais appartenant aux Peuls, est entouré de légendes et de croyances qui lui attribuent des pouvoirs spirituels. Essentiel pour l’irrigation des cultures, il permettait de subvenir aux besoins en eau des communautés locales, notamment dans une région où les autres sources d'eau étaient insuffisantes.",
+                "image": "TC5.jpg"
+            },
+            {
+                "name": "Le puits Colomba à Maka",
+                "lat":  13.666809,
+                "lon": -14.286246,
+                "description": "Le puits de Colomba, premier puits creusé dans le village de Maka, était essentiel à l’approvisionnement en eau et revêtait une grande importance sacrée. Il était lié à des croyances de protection pour les soldats et de fertilité pour les femmes. Actuellement en mauvais état, il fait l’objet de discussions pour sa reconstruction.",
+                "image": "TC6.jpg"
+            },
+            {
+                "name": "Le puits du pont ferroviaire de Tambacounda",
+                "lat":  13.775444,
+                "lon": -13.665056,
+                "description": "Le puits près du pont ferroviaire de Tambacounda, creusé par des ouvriers burkinabés lors de la construction du chemin de fer Dakar-Bamako, a une importance mystique. Il est associé à des rituels tels que le « Ndeup » et contient des serpents et un arbre en son sein. Le site est en voie de disparition à cause de l’érosion provoquée par le fleuve Mamacounda et les questions de sécurité.",
+                "image": "TC7.jpg"
+            },
+            {
+                "name": "Le marigot de Goundiour",
+                "lat":  13.988806,
+                "lon": -14.437444,
+                "description": "Le marigot près de Goundiour, dans le département de Koumpentoum, revêt une importance culturelle et spirituelle pour les habitants. Il recueille les eaux de ruissellement pendant l'hivernage et est associé à des croyances locales. Lieu de rituels et d'offrandes, il joue également un rôle crucial dans l'écosystème local.",
+                "image": "TC8.jpg"
+            },
+            {
+                "name": "Le marigot de Kirangue",
+                "lat":  13.842528,
+                "lon": -14.477917,
+                "description": "Le marigot de Ndioumbour Socé, situé dans le département de Koumpentoum, est une source d'eau précieuse pour la faune, la flore et l'agriculture locale. Il conserve de l'eau toute l'année et, selon les traditions locales, aide à la fertilité des femmes stériles.",
+                "image": "TC9.jpg"
+            },
+            {
+                "name": "Le Mamacounda ",
+                "lat":  14.011069,
+                "lon": -13.993920,
+                "description": "Le fleuve Mamacounda, autrefois appelé Faraba, traverse plusieurs communes de Tambacounda avant de se jeter dans le fleuve Gambie. Lieu sacré et de rituels autrefois, il demeure important pour l'agriculture et la pêche. Les croyances en la présence d'esprits y subsistent, et le fleuve est actuellement menacé par l'occupation anarchique et les invasions d'insectes et de reptiles.",
+                "image": "TC10.jpg"
+            },
+            {
+                "name": "Le marigot de simenti",
+                "lat":  13.030429,
+                "lon": -13.290865,
+                "description": "e marigot de Simenti, situé dans le parc de Niokolo-Koba, constitue une source d'eau essentielle pour diverses espèces animales, telles que les crocodiles, les buffles et les antilopes. Il offre également des possibilités d'observation pour les visiteurs du parc. Ce marigot abrite une riche biodiversité, comprenant des poissons, des oiseaux, des reptiles et des plantes aquatiques. Il est crucial pour l'agriculture, le bétail et les besoins domestiques, particulièrement pendant la saison sèche, en permettant l'irrigation des cultures vitales pour l'agriculture de subsistance dans la région",
+                "image": "TC10.jpg"
+            }          
+			                 
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiès</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">Thiès, ville stratégique du Sénégal, se distingue par son rôle central dans le développement du pays, notamment grâce à son chemin de fer. Réputée pour son artisanat, notamment les tapisseries, elle témoigne d'une riche tradition culturelle. Ville de résistance pendant la lutte pour l'indépendance, Thiès garde les récits de ses héros tout en se modernisant. Aujourd'hui, elle allie tradition et modernité, avec une jeunesse innovante et un dynamisme qui fait d'elle un centre de prospérité et de diversité.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Le puits Ngouth à Ngaparou </li>
+                <li>La rivière de la grâce de Thiemassas</li>			
+			</ul>	
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="TH1.jpg" data-lightbox="gallery" data-title="Galerie Thiès">
+                    <img src="TH1.jpg" alt="Galerie Thiès" class="gallery-image">
+                </a>
+                <a href="TH2.jpg" data-lightbox="gallery" data-title="Galerie Thiès">
+                    <img src="TH2.jpg" alt="Galerie Thiès" class="gallery-image">
+                </a>
+                <a href="TH3.jpg" data-lightbox="gallery" data-title="Galerie Thiès">
+                    <img src="TH3.jpg" alt="Galerie Thiès" class="gallery-image">
+                </a>
+				<a href="TH4.jpg" data-lightbox="gallery" data-title="Galerie Thiès">
+                    <img src="TH4.jpg" alt="Galerie Thiès" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([14.672642, -16.830732], 10); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Le puits Ngouth à Ngaparou",
+                "lat": 14.464283,
+                "lon": -17.058882,
+                "description": "Le puits, au cœur de la vie sociale et spirituelle, joue un rôle essentiel lors des rites de passage et cérémonies religieuses. Son eau, bénite et associée à des légendes de miracles, est aussi une ressource vitale pour la communauté, notamment en période de pénurie.",
+                "image": "TH1.jpg"
+            },
+            {
+                "name": "La rivière de la grâce de Thiemassas",
+                "lat": 14.320249,
+                "lon": -16.929290,
+                "description": "Thiemassas, une rivière se déversant dans l'océan, est située à Nianing, sur la route menant à Pointe Sarène. Selon les anciens, ce lieu était habité par un esprit ou un djinn. Le nom « Thiemassas » proviendrait du terme sérère « Thièm a saass », qui signifie « les vaguelettes salées ». L'endroit est également appelé « A mbel ala na muc ala », ou « la rivière de la grâce », en référence aux « Sund ke Jegem », les guerriers de Djiguéme, qui s’y réfugiaient avant de se préparer au combat. À cette époque, Nianing, Mbour et Sandiara faisaient partie du royaume de Djiguéme.",
+                "image": "TH2.jpg"
+            }
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

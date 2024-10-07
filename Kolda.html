@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kolda</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Kolda,située au sud du Sénégal, est un exemple de la richesse culturelle et historique du Sénégal. Elle continue de se développer tout en préservant son patrimoine unique, faisant de Kolda un lieu d'intérêt tant pour les chercheurs que pour les visiteurs.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Le puits d’Alallacolon de Kandia</li>
+                <li>Le puits de Badioubantang  nommé « Wodi »</li>                 
+				<li>Le marigot de « Belall »</li>
+				
+        </div>
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="KDa1.jpg" data-lightbox="gallery" data-title="Galerie Kolda">
+                    <img src="KD1.jpg" alt="Galerie Kolda" class="gallery-image">
+                </a>
+                <a href="KDa2.jpg" data-lightbox="gallery" data-title="Galerie Kolda">
+                    <img src="KDa2.jpg" alt="Galerie Kolda" class="gallery-image">
+                </a>
+                <a href="KDa3.jpg" data-lightbox="gallery" data-title="Galerie Kolda">
+                    <img src="KDa3.jpg" alt="Galerie Kolda" class="gallery-image">
+                </a>
+				<a href="KDa4.jpg" data-lightbox="gallery" data-title="Galerie Kolda">
+                    <img src="KDa4.jpg" alt="Galerie Kolda" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([ 13.070231,-14.413551], 8.5); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Le puits d’Alallacolon de Kandia",
+                "lat": 13.087500,
+                "lon": -14.224722,
+                "description": "Le puits Alallacolon est considéré comme une œuvre divine, découverte naturellement et non creusée par la main de l'homme. Son origine est liée à une histoire légendaire où un chasseur, épuisé et assoiffé, suivit son chien à la poursuite d'un singe. Ce dernier, en observant des fourmis rouges, signe traditionnel de la présence d'eau, fut conduit au puits. Ce lieu, découvert dans des circonstances mystiques, est perçu comme sacré par les habitants, en raison de sa nature divine et de l'importance de l'eau qu'il procure. Sa découverte a marqué l'histoire locale, conférant à ce puits un caractère spirituel et mythique.",
+                "image": "KDa1.jpg"
+            },
+            {
+                "name": "Le puits de Badioubantang",
+                "lat": 12.793631,
+                "lon": -13.836479,
+                "description": "Le puits, nommé « Wodi » ou « Woydu », est l’un des premiers de la Sénégambie Méridionale, datant du début du XVe siècle, en lien avec la fondation du village de Paroumba. Il a été central dans la vie des Mandingues, Socés, et Peulhs qui l’utilisaient pour leurs besoins quotidiens. Sa sacralité est accentuée par la chute tragique d'une jeune mariée, qui a provoqué la dispersion des populations locales. De plus, durant la guerre du Fouladou, le puits a servi de refuge pour ceux qui fuyaient la violence, renforçant ainsi son importance en tant que symbole de sécurité et de solidarité communautaire.",
+                "image": "KDa2.jpg"
+            },
+            {
+                "name": "Le marigot de « Belall »",
+                "lat": 13.058435,
+                "lon": -14.407588,
+                "description": "Le marigot « Belall », situé dans la région de Kolda, délimite les départements de Vélingara et Médina Yoro Fulah, ainsi que la commune de Badion et le village de Saré Mamadou. Selon la tradition orale, ce marigot servait de frontière entre les cantons de Mamacounda et Corassé, où aucun chef de canton n'osait franchir sans l'accord de son homologue. En outre, ses abords étaient utilisés par les chasseurs, qui se dissimulaient dans des cachettes appelées « Thioukel » pour surprendre les animaux venant s'abreuver. Le marigot était également essentiel pour l'élevage, attirant des éleveurs de diverses localités grâce à la richesse de sa végétation. De plus, il constituait une source de maraîchage pour les habitants des environs.",
+                "image": "KDa3.jpg"
+            }
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

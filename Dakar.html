@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dakar</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">L'eau, élément vital et symbole de purification, occupe une place prépondérante dans la culture et la spiritualité des sociétés humaines. À Dakar, la capitale du Sénégal, certaines sources aquatiques sont considérées comme sacrées, illustrant la connexion profonde entre les populations et leur environnement. L'exploration des eaux sacrées de la région permet de comprendre comment ces éléments façonnent non seulement l'identité culturelle des communautés, mais aussi leur relation à la nature et à la spiritualité. La région de Dakar se distingue par plusieurs points d'eau, marigots et puits sacrés, qui témoignent de l'histoire des cultes des sociétés anciennes.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Le puits de bargny</li>
+                <li>Le puits de YOFF</li>                 
+				<li>Le puits de Ndiambalane</li>
+				<li>Le marigot de Hann</li>
+				<li>Le marigot de Mbao</li>
+				<li>Lac Rose</li>
+				<li>La rivière de khouloup </li>
+        </div>
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="DK6.jpg" data-lightbox="gallery" data-title="Galerie Dakar">
+                    <img src="DK6.jpg" alt="Galerie Dakar" class="gallery-image">
+                </a>
+                <a href="DK2a.jpg" data-lightbox="gallery" data-title="Galerie Dakar">
+                    <img src="DK2a.jpg" alt="Galerie Dakar" class="gallery-image">
+                </a>
+                <a href="DK2b.jpg" data-lightbox="gallery" data-title="Galerie Dakar">
+                    <img src="DK2b.jpg" alt="Galerie Dakar" class="gallery-image">
+                </a>
+				<a href="DK4.jpg" data-lightbox="gallery" data-title="Galerie Dakar">
+                    <img src="DK4.jpg" alt="Galerie Dakar" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([ 14.756236,-17.364725], 10.5); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Le puits de bargny",
+                "lat": 14.697319,
+                "lon": -17.228529,
+                "description": "Le puits sacré de Minam, à Bargny, découvert par El Hadji Oumar Foutiyou Tall, est un lieu vénéré par les habitants qui le considèrent comme leur patrimoine immatériel. Ce puits, miraculeusement créé lorsque le saint homme chercha de l'eau pour ses ablutions, attire encore aujourd'hui des disciples d’El Hadji Oumar. Parfois, l’eau du puits disparaît et réapparaît, ajoutant à son caractère sacré.",
+                "image": "DK1.jpg"
+            },
+            {
+                "name": "Le puits de YOFF",
+                "lat": 14.763380,
+                "lon": -17.478342,
+                "description": "Yoff, une importante cité religieuse, a été marquée par l'influence du guide Mame Limamou Laye. Le puits de Yoff est un site culturel et historique sacré pour les habitants, associé à diverses croyances et utilisé pour des rites et cérémonies. Les Lébous croient en ses propriétés spirituelles et curatives, attirant ceux en quête de bénédictions et de guérisons. Ce puits est également d'un grand intérêt pour les visiteurs et chercheurs s'intéressant aux traditions sénégalaises, illustrant ainsi la continuité des traditions ancestrales dans la vie contemporaine en Afrique de l'Ouest.",
+                "image": "DK2.jpg"
+            },
+            {
+                "name": "Le puits de Ndiambalane",
+                "lat":  14.601951,
+                "lon": -17.146975,
+                "description": "Le puits de Ndiambalane, situé à Toubab Dialaw entre Mbao et Bargny, est un site religieux et historique lié à Elhadji Oumar TALL. À son arrivée, il a creusé ce puits, nommé « Ndiambalane », signifiant « paix »  en lébous, qui n'est visible que trois mois et quatre jours par an, étant recouvert par la mer le reste du temps. Sacré, il a été utilisé par Elhadji Oumar pour ses ablutions avant la prière de Tisbar. À proximité, un autre puits, creusé par les habitants, sert à protéger les nouveau-nés et est associé à des croyances de santé. Toubab Dialaw abrite ainsi plusieurs puits sacrés, témoignant de l'héritage spirituel de la communauté.",
+                "image": "DK3.jpg"
+            },
+            {
+                "name": "Le marigot de Hann",
+                "lat": 14.727765,
+                "lon": -17.431916,
+                "description": "Le marigot de Hann, situé à l'est de la péninsule de Dakar, est un écosystème riche en biodiversité, abritant diverses espèces végétales et animales. Considéré comme un lieu sacré par les habitants, il est le site de rituels de purification et d'offrande, où l'eau est perçue comme protectrice et bénéfique. Les ressources du marigot sont essentielles pour la pêche et la collecte de coquillages. Les cérémonies spirituelles, telles que le « ndeup », renforcent le lien entre la communauté et cet environnement aquatique, en faisant du marigot un symbole de prospérité et d'identité culturelle, transmis de génération en génération.",
+                "image": "DK4.jpg"
+            },
+            {
+                "name": "Le marigot de Mbao",
+                "lat": 14.731834,
+                "lon": -17.326107,
+                "description": "Le marigot de Mbao est un écosystème sacré et vital situé dans la région de Dakar. Il est reconnu pour sa biodiversité et revêt une grande importance culturelle et spirituelle pour les différentes ethnies locales. Les habitants se rendent souvent au marigot pour prier et faire des offrandes, y apportant des objets symboliques pour demander protection et prospérité. La richesse de sa végétation et de son écosystème contribue à son caractère sacré, soulignant la relation étroite entre l'homme et la nature. En somme, le marigot de Mbao joue un rôle central dans la culture et l'identité de la communauté locale.",
+                "image": "DK2b.jpg"
+            },
+            {
+                "name": "Lac Rose",
+                "lat":  14.836574,
+                "lon": -17.226388,
+                "description": "Le lac Rose, ou lac Retba, situé à environ 35 km au nord-est de Dakar, est célèbre pour sa teinte rosée, due à sa forte salinité et à l’algue Dunaliella salina. Il est un site sacré pour les communautés locales, notamment les Lébous, qui y pratiquent des rituels pour invoquer la bénédiction des esprits, incluant des offrandes et des prières pour la prospérité. Les bains dans le lac sont considérés comme des actes de purification et de guérison, et des légendes locales enrichissent son importance culturelle, spirituelle et économique, contribuant au patrimoine immatériel de la région.",
+                "image": "DK6.jpg"
+            },
+            {
+                "name": "La rivière de khouloup ",
+                "lat": 14.684492,
+                "lon": -17.223701,
+                "description": "La rivière Khouloup, emblématique de Bargny, se situe à environ 30 km au sud-est de Dakar, dans le village de Bargny Guéth. Ce cours d'eau joue un rôle essentiel dans la vie quotidienne des habitants, fournissant de l'eau pour les activités domestiques et agricoles, tout en étant un site de pêche important. Considérée comme sacrée, l'eau de la rivière est utilisée dans divers rituels et cérémonies en raison de ses propriétés purificatrices. Cependant, elle fait face à des défis de pollution et de gestion de l'eau, comme de nombreuses rivières urbaines.",
+                "image": "DK7.jpg"
+            }
+			
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diourbel</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Diourbel, située dans le centre-ouest du Sénégal, renferme des sites culturels et historiques d'une richesse remarquable, notamment les puits sacrés et la vallée fossile. Ces lieux, véritables témoins de l'histoire locale, possèdent une importance culturelle, religieuse et écologique significative.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Puits Aïnou Rila</li>
+                <li>Puits Serigne Fallou</li>                 
+				<li>Le puits de Ngassou</li>
+				<li>Le puits de Ndiaréme</li>
+				<li>La vallée fossile</li>
+				
+        </div>
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="DL1.jpg" data-lightbox="gallery" data-title="Galerie Diourbel">
+                    <img src="DL1.jpg" alt="Galerie Diourbel" class="gallery-image">
+                </a>
+                <a href="DL2.jpg" data-lightbox="gallery" data-title="Galerie Diourbel">
+                    <img src="DL2.jpg" alt="Galerie DDiourbel" class="gallery-image">
+                </a>
+                <a href="DL3.jpg" data-lightbox="gallery" data-title="Galerie Diourbel">
+                    <img src="DL3.jpg" alt="Galerie Diourbel" class="gallery-image">
+                </a>
+				<a href="DL4.jpg" data-lightbox="gallery" data-title="Galerie Diourbel">
+                    <img src="DL4.jpg" alt="Galerie Diourbel" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([ 14.790920,-16.083446], 9.5); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Puits Aïnou Rila",
+                "lat": 14.868398,
+                "lon": -15.875039,
+                "description": "Les talibés mourides transportaient de l'eau de Ndiarème à Touba en formant une chaîne de relais. Cheikh Modou Moustapha Mbacké, fils de Cheikh Ahmadou Bamba et premier khalife général des Mourides, a creusé un puits à Darrou Khoudoss, au nord-ouest de la grande mosquée de Touba, qu'il a nommé Haïnou Rila. Utilisé lors de la construction de la grande mosquée, ce puits est considéré comme une source d'eau bénite, capable d'être mélangé avec d'autres eaux pour des propriétés curatives. Il alimentait également d'autres puits environnants, tels que le teen Serigne Fallou et Haïnou Rahmati, qui manquaient d'eau. En somme, Haïnou Rila revêt une importance culturelle et historique majeure pour la ville de Touba.",
+                "image": "DL1.jpg"
+            },
+            {
+                "name": "Puits Serigne Fallou",
+                "lat": 14.864973,
+                "lon": -15.879990,
+                "description": "Le puits Serigne Fallou, situé près du mausolée de Serigne Abdou Khadre dans l'enceinte de la grande mosquée de Touba, a été creusé par Serigne Fallou, fils de Serigne Touba et deuxième khalife général des mourides, avec l'autorisation de son père. Ce puits avait pour but de protéger des écrits précieux. Après son pèlerinage à la Mecque en 1928, Serigne Fallou a enrichi le puits avec de l'eau de zamzam, affirmant que boire de cette eau était équivalent à boire de l'eau de zamzam. Cette eau bénie attire de nombreux fidèles, qui viennent puiser et emporter de l'eau pour la guérison et la prière, espérant que leurs vœux soient exaucés.",
+                "image": "DL2.jpg"
+            },
+            {
+                "name": "Le puits de Ngassou",
+                "lat":  14.718021,
+                "lon": -16.514201,
+                "description": "La vallée fossile de Diourbel est un site écologique d'une grande importance, présentant des fossiles qui illustrent les anciens écosystèmes préhistoriques de la région. Au fil du temps, la sécheresse prolongée des années 1960-1970 a provoqué une baisse significative des niveaux d'eau, entraînant l'assèchement des rivières. La construction massive de forages pour répondre aux besoins en eau a également détourné les ressources des cours d'eau naturels, perturbant l'équilibre des nappes phréatiques et aggravant la dégradation de ce site autrefois fertile.",
+                "image": "DL3.jpg"
+            },
+            {
+                "name": "Le puits de Ndiaréme",
+                "lat": 14.658438,
+                "lon": -16.2222672,
+                "description": "Le puits de Ndiaréme, situé à Diourbel, est un site emblématique de la culture religieuse mouride, creusé par les talibés après l'installation de Cheikh Ahmadou Bamba à Keur Gou Magg vers 1913. Choisi pour ses ablutions rituelles en raison de la pureté de son eau, il est devenu un symbole de sa foi pendant les douze années passées à Diourbel. Aujourd'hui considéré comme sacré, l'eau de ce puits est consommée avec respect par les musulmans mourides, qui viennent y puiser pour bénéficier de ses vertus spirituelles. Le puits est ainsi devenu un lieu de pèlerinage et un monument vivant du patrimoine religieux de la région.",
+                "image": "DL4.jpg"
+            },
+            {
+                "name": "La vallée fossile",
+                "lat": 14.658490,
+                "lon": -16.226600,
+                "description": "Le marigot de Mbao est un écosystème sacré et vital situé dans la région de Dakar. Il est reconnu pour sa biodiversité et revêt une grande importance culturelle et spirituelle pour les différentes ethnies locales. Les habitants se rendent souvent au marigot pour prier et faire des offrandes, y apportant des objets symboliques pour demander protection et prospérité. La richesse de sa végétation et de son écosystème contribue à son caractère sacré, soulignant la relation étroite entre l'homme et la nature. En somme, le marigot de Mbao joue un rôle central dans la culture et l'identité de la communauté locale.",
+                "image": "DL.jpg"
+            }
+			
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

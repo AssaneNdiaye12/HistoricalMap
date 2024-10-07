@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matam</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Matam, située au nord du Sénégal, est une terre riche en histoire, culture et mysticisme. Elle se distingue par ses multiples sites naturels et historiques, qui sont le théâtre de nombreuses traditions ancestrales influençant la vie quotidienne de ses habitants. Les rivières, puits et autres lieux sacrés revêtent une importance capitale dans la culture locale, chacun possédant une signification unique, souvent chargée de mysticisme.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>La rivière de Diorbivol</li>
+                <li>Le Patowel</li>                 
+				<li>Le Puits de Sara Couro</li>
+				<li>Les deux puits historiques du village de ogo</li>
+				<li>Le fleuve de Nguidjilogne</li>
+				<li>Le Toufndé Samsatoundé</li>
+				<li>Le fleuve Mystérieux de Djamel</li>
+			</ul>	
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="MT1.jpg" data-lightbox="gallery" data-title="Galerie Matam">
+                    <img src="MT1.jpg" alt="Galerie Matam" class="gallery-image">
+                </a>
+                <a href="MT2.jpg" data-lightbox="gallery" data-title="Galerie Matam">
+                    <img src="MT2.jpg" alt="Galerie Matam" class="gallery-image">
+                </a>
+                <a href="MT3.jpg" data-lightbox="gallery" data-title="Galerie Matam">
+                    <img src="MT3.jpg" alt="Galerie Matam" class="gallery-image">
+                </a>
+				<a href="MT4.jpg" data-lightbox="gallery" data-title="Galerie Matam">
+                    <img src="MT4.jpg" alt="Galerie Matam" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([15.225636, -13.720730], 8.5); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "La rivière de Diorbivol",
+                "lat": 15.32596,
+                "lon": -12.87353,
+                "description": "La rivière de Diorbivol, dans le Dandé Mayo de Orefondé, est un cours d'eau chargé d'une histoire mystique, jadis redouté pour ses crocodiles et esprits sacrés. Les habitants ont apaisé les dangers par des rituels, mais certains phénomènes inexplicables persistent, tels que des pirogues soulevées par des forces invisibles. Des habitats temporaires à proximité ajoutent une dimension surnaturelle, avec des voyageurs constatant leur disparition au matin. Cette rivière est donc perçue comme un lieu mystique, où il est essentiel de respecter les croyances locales.",
+                "image": "MT1.jpg"
+            },
+            {
+                "name": "Le Patowel",
+                "lat": 15.49170,
+                "lon": -13.18176,
+                "description": "Le Patowel, dans le département de Kanel, est une section du fleuve d'une grande importance culturelle pour les pêcheurs soubalbés, qui célèbrent la cérémonie de pêche « Diolté ». Cet événement communautaire renforce les liens sociaux et honore les compétences des pêcheurs. Toutefois, des croyances mystiques régissent son utilisation, interdisant l'accès aux étrangers et restreignant les femmes menstruées. Seules les personnes qualifiées, comme les Thioubalos, peuvent gérer les forces spirituelles présentes dans le fleuve. En cas d'incidents, des rituels complexes sont nécessaires pour apaiser les esprits. Ainsi, le Patowel illustre comment les traditions ancestrales façonnent les interactions avec l'environnement naturel.",
+                "image": "MT2.jpg"
+            },
+            {
+                "name": "Le puits de Sara Couro",
+                "lat": 15.65605,
+                "lon": -13.25535,
+                "description": "Le puits de Sara Couro, ou « Woydou Ndow », est une infrastructure historique de la commune de Bokidiawé, région de Matam, construit en 1913 par les habitants de cinq villages pour faire face à une sécheresse. Malgré des obstacles dus aux djinns malveillants, les villageois ont réussi à achever le puits après des rituels d'apaisement. Ce puits est soumis à des règles strictes, interdisant de puiser de l'eau la nuit, en raison des croyances mystiques associées. Au-delà de son rôle d'approvisionnement, il symbolise l'harmonie entre besoins matériels et croyances spirituelles, illustrant la profondeur des traditions culturelles de la région. Sa préservation et la transmission de ses récits sont cruciales pour maintenir un équilibre entre tradition et modernité dans la gestion des ressources naturelles.",
+                "image": "MT3.jpg"
+            },
+            {
+                "name": "Les deux puits historiques du village de ogo",
+                "lat":  15.555406,
+                "lon": -13.296732,
+                "description": "En 1955, la visite d'un gouverneur français à Ogo, accueillie chaleureusement par Sada Ba, eut des répercussions significatives sur la communauté. Lors de cette visite, les villageois exprimèrent un besoin urgent d'eau potable, ce qui conduisit à la promesse et à la construction de deux puits à Founébé et Haleybé. Ces puits améliorèrent les conditions de vie en fournissant une source d'eau potable fiable, favorisant la santé publique et l'agriculture. Toutefois, aujourd'hui, ils sont négligés par la jeune génération en raison de divers facteurs, soulignant la nécessité de sensibiliser la communauté à leur valeur historique et de promouvoir leur préservation pour les générations futures.",
+                "image": "MT4.jpg"
+            },
+            {
+                "name": "Le fleuve de Nguidjilogne",
+                "lat": 15.59908,
+                "lon": -13.44694,
+                "description": "Le fleuve Nguidjilogne, au cœur du grand village de Koly, est fondamental dans l'histoire et la culture de la région. Considéré comme sacré, il est le site de rites et de cérémonies, abritant une mosquée et le cimetière des Waliyous, figures spirituelles vénérées. Ce fleuve, entouré de tabous et refusant l'accès aux nouveaux venus, a été le théâtre d'un événement mystique notable en 1989, où il aurait réagi aux tensions entre le Sénégal et la Mauritanie, illustrant le contrôle spirituel exercé par les chefs des soubalbés.",
+                "image": "MT5.jpg"
+            },
+            {
+                "name": "Le fleuve Mystérieux de Djamel ",
+                "lat": 15.67947,
+                "lon": -13.24032,
+                "description": "Le fleuve mystérieux de Djamel, à l'est de Matam, est au cœur de croyances locales fascinantes. Il est réputé pour rejeter les étrangers, indépendamment de leur compétence en natation, et gronder lorsqu'on y lave des objets, ce qui pourrait entraîner des dangers mortels. Ces croyances servent à protéger la culture du village et à réguler les comportements des habitants, qui évitent de laver dans le fleuve par crainte de provoquer sa colère. Cette dynamique illustre le fleuve comme un symbole de pouvoir et de contrôle au sein de la communauté.",
+                "image": "MT6.jpg"
+            },
+            {
+                "name": "Le bras de mer de MBEGANE NDOUR à kahone",
+                "lat": 14.176208,
+                "lon": -13.25412,
+                "description": "Le Toufndé Samsatoundé, lieu sacré de la région de Matam, au Sénégal, est un symbole de spiritualité et de puissance divine. Les habitants y pratiquent la purification par l’eau, ainsi que des rituels de prières et d’offrandes, notamment l’aumône de lait, pour honorer les esprits. La croyance selon laquelle un bain dans ces eaux exauce les demandes à Dieu attire de nombreuses personnes, renforçant son statut de site d'importance spirituelle et mystique dans la culture locale.",
+                "image": "MT7.jpg"
+            },
+            {
+                "name": "La rivière de Badel",
+                "lat": 15.270944,
+                "lon": -13.129467,
+                "description": "La rivière de Badel était essentielle pour la région, fournissant de l'eau et considérée comme un remède contre certaines maladies. Cependant, elle était soumise à des règles strictes interdisant son approche entre le coucher et le lever du soleil, ainsi que l'accès des enfants, en raison de la présence d'une créature mythique, le « Goloba », un crocodile qui chassait les animaux et causait la mort de ceux qui s'aventuraient près de la rivière la nuit. La rivière s'asséchait durant la saison sèche avant de se remplir pendant les pluies.",
+                "image": "MT8.jpg"
+            },
+            {
+                "name": "La rivière de Patowel",
+                "lat": 15.507645,
+                "lon": -13.139410,
+                "description": "La rivière de Patowel, longue de quatre kilomètres et profonde de quatre mètres, conserve de l'eau toute l'année et est utilisée pour la pêche et la navigation. Selon le délégué de quartier, elle est considérée comme mystérieuse en raison des créatures « moun mayo » ou sirènes qui en interdisent l'accès à certaines zones. Les pêcheurs expérimentés sont les seuls autorisés à pêcher dans ces zones, et il est prohibé de s'approcher de la rivière lorsque le soleil est au zénith. Les enfants et les étrangers sont également interdits d'accès, sous peine de noyade. Malgré les croyances contradictoires sur la nature de ces créatures, la rivière continue d'être exploitée par les habitants de Kanel et des villages voisins.",
+                "image": "MT9.jpg"
+            }
+			
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

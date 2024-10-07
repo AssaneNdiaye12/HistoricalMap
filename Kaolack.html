@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaolack</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Kaolack, riche en histoire et en patrimoine, abrite de nombreux puits, marigots, forages et bras de mer historiques qui ont joué un rôle fondamental dans la vie des communautés locales. Ces structures, souvent érigées il y a plusieurs siècles, servaient non seulement de sources d'eau potable, mais également de lieux de rencontre et d'échanges commerciaux. Au-delà de leur fonction utilitaire, ces points d'eau constituent des témoins vivants de l'histoire et de la culture locales. Ils reflètent les techniques de construction traditionnelle ainsi que l'ingéniosité des populations, qui ont su exploiter ces ressources naturelles pour survivre dans un environnement parfois hostile.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Puits de Baye Niass</li>
+                <li>Puits de Kahone </li>                 
+				<li>Puits de Ndiaffate</li>
+				<li>Puit Mame Diarra Bousso de Porokhane</li>
+				<li>Puits Duy Dagou de Kabakoto</li>
+				<li>Puits de Maba Diokhou Ba</li>
+				<li>Marigot Paoskoto</li>
+				<li>Marigot de Adam a kahone</li>
+				<li>Marigot de Sibassor</li>
+				<li>Marigot de Gandiaye </li>
+				<li>Le bras de mer de MBEGANE NDOUR à kahone</li>
+        </div>
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="KL1.jpg" data-lightbox="gallery" data-title="Galerie Kaolack">
+                    <img src="KL1.jpg" alt="Galerie Kaolack" class="gallery-image">
+                </a>
+                <a href="KL2.jpg" data-lightbox="gallery" data-title="Galerie Kaolack">
+                    <img src="KL2.jpg" alt="Galerie Kaolack" class="gallery-image">
+                </a>
+                <a href="KL3.jpg" data-lightbox="gallery" data-title="Galerie Kaolack">
+                    <img src="DL3.jpg" alt="Galerie Kaolack" class="gallery-image">
+                </a>
+				<a href="KL4.jpg" data-lightbox="gallery" data-title="Galerie Kaolack">
+                    <img src="KL4.jpg" alt="Galerie Kaolack" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([14.012699, -16.061395], 9.5); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Le marigot Paoskoto",
+                "lat":13.785374,
+                "lon": -15.806186,
+                "description": "Le marigot de Pathé Badiane, nommé d’après un vieil homme qui aidait les habitants à traverser, est une ressource vitale pour l’agriculture et l’élevage à Paoskoto. Il est également un lieu historique, marqué par la bataille du 30 septembre 1865 entre les forces locales et les troupes coloniales françaises, gravée dans la mémoire collective sénégalaise.",
+                "image": "KL1.jpg"
+            },
+            {
+                "name": "Puit Mame Diarra Bousso de Porokhane",
+                "lat": 13.689657,
+                "lon": -15.827758,
+                "description": "Le puits de Mame Diarra Bousso, lié à une anecdote révélant sa grande dévotion envers son mari et sa communauté, est devenu un site de pèlerinage important au Sénégal. Rénové en 1950, ce lieu attire chaque année des milliers de fidèles lors du « Magal » en hommage à Mame Diarra, renforçant à la fois son importance spirituelle et son rôle dans l’économie locale.",
+                "image": "KL2.jpg"
+            },
+            {
+                "name": "Le puits Duy Dagou de Kabakoto ",
+                "lat": 13.776574,
+                "lon": -15.642725,
+                "description": "Le puits de Duy Dagou, à l’histoire obscure et à l'apparence atypique, est devenu un lieu légendaire dans le village de Kabakoto. Lié à Mame Diarra Bousso, il est entouré de nombreuses croyances, comme l’interdiction pour les femmes enceintes de s’y arrêter et l’apparition de serpents durant la prière. Ce puits incarne un riche patrimoine culturel, porté par des récits transmis à travers les générations.",
+                "image": "KL3.jpg"
+            },
+            {
+                "name": "Le Puits de Maba Diokhou Ba",
+                "lat": 13.685615,
+                "lon": -15.764188,
+                "description": "Le puits creusé par Maba Diakhou Bâ à Keur Sett Diakhou ne constitue pas uniquement une source d'eau ; il s'agit d'un véritable monument historique et spirituel, incarnant l'héritage et les traditions religieuses de la communauté. Ce puits symbolise l'importance primordiale de l'eau dans les rites de purification islamique, ainsi que le dévouement de Maba Diakhou Bâ à doter sa communauté des ressources nécessaires pour pratiquer leur foi dans des conditions appropriées. Les récits des villageois continuent de transmettre l'histoire de ce puits, veillant à ce que son héritage spirituel et culturel soit perpétué à travers les générations.",
+                "image": "KL4.jpg"
+            },
+            {
+                "name": "Le puits de Baye Niass",
+                "lat": 14.160594,
+                "lon": -16.063313,
+                "description": " Creusé par Baye Niass en 1937, le puits de Medina Baye est une source d'eau potable essentielle et spirituellement vénérée. Réputée pour ses vertus curatives, l'eau du puits est prisée par les fidèles. Rénové en 2009, il continue de jouer un rôle central dans la vie religieuse et quotidienne de la communauté de Kaolack.",
+                "image": "KL5.jpg"
+            },
+            {
+                "name": "Le puits de Kahone",
+                "lat": 14.155132,
+                "lon": -16.037506,
+                "description": "Le puits de Kahone, construit en 1909, est un lieu à la fois historique et mystique dans la région de Kaolack. Entouré de légendes, il aurait des propriétés magiques qui se manifesteraient seulement aux personnes aux intentions pures. Une prophétie raconte que le puits révélerait un secret en période de grand péril. Lors d'une grande sécheresse, un jeune garçon nommé Sadio, guidé par un rêve, fit scintiller l'eau du puits en chantant une mélodie ancienne, sauvant ainsi le village. Aujourd'hui, ce site est toujours vénéré et son histoire est transmise aux générations futures.",
+                "image": "KL6.jpg"
+            },
+            {
+                "name": "Le bras de mer de MBEGANE NDOUR à kahone",
+                "lat": 14.176208,
+                "lon": -16.048939,
+                "description": "Le bras de mer de Kahone, créé selon la légende par Mbegane Ndour après un sacrifice mystique, occupe une place centrale dans l’histoire et la culture de la région. Doté de pouvoirs mystiques, Mbegane Ndour aurait communiqué avec l’esprit de ces eaux pour protéger sa communauté des inondations et des ennemis. Aujourd’hui, des rituels en son honneur perdurent, et il est vénéré pour son rôle protecteur et spirituel. Son héritage continue d’influencer la vie des habitants, témoignant de la profonde connexion entre le patrimoine culturel de Kahone et ses traditions ancestrales.",
+                "image": "KL7.jpg"
+            },
+            {
+                "name": "Le puits de Ndiaffate",
+                "lat": 14.088965,
+                "lon": -16.167227,
+                "description": "Le puits de Ndiaffate, creusé par les ancêtres sérères, est un symbole de résilience et d'endurance face aux défis climatiques, tout en étant un site sacré et culturellement significatif. Il a servi de source d’eau potable et de lieu de rassemblement pour la communauté. Aujourd'hui, face aux enjeux environnementaux, des efforts sont faits pour moderniser l'infrastructure tout en préservant son caractère sacré et historique.",
+                "image": "KL8.jpg"
+            },
+            {
+                "name": "Le marigot de sibassor ",
+                "lat": 14.181261,
+                "lon": -16.179840,
+                "description": "Le marigot de Sibassor, près du village de Sibassor dans la région de Kaolack, est un site culturel majeur. Considéré comme habité par des esprits protecteurs, il est le centre de rituels et d’offrandes destinés à garantir la pluie et la prospérité. Des croyances animistes et des récits de manifestations surnaturelles enrichissent son importance, en faisant un symbole de la connexion entre les habitants et leur environnement. Ce marigot continue d’attirer locaux et visiteurs fascinés par ses légendes et sa spiritualité.",
+                "image": "KL9.jpg"
+            }
+			
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

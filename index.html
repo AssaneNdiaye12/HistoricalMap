@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senegal StoryMap</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <style>
+        #map {
+            height: 100vh;
+            width: 75%;
+            float: left;
+            transition: transform 4s ease; /* Animation CSS de zoom sur 4 secondes */
+        }
+
+        #sidebar {
+            height: 100vh;
+            width: 25%;
+            float: left;
+            padding: 0px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        #info {
+            margin-top: 0px;
+        }
+
+        /* Style pour les images dans la section historique */
+        #info img {
+            width: 155px;
+            height: auto;
+            margin-right: 2px;
+        }
+		
+		.avec-padding {
+            padding: 10px; /* Padding de 10 pixels */            
+        }
+
+        .image-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        /* Animation de zoom-in */
+        .zoom-in {
+            transform: scale(1.8); /* Zoom in de 20% */
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="sidebar">
+        <div id="info">
+            <div class="image-container">
+                <img src="image1.jpg" alt="Image 1" />
+                <img src="image2.jpg" alt="Image 2" />
+            </div>			
+		</div>
+	<div class="avec-padding">
+		    <p style="text-align: justify;">Le symbolisme des points d'eau dans les sociétés traditionnelles sénégalaises est profondément ancré dans la culture et la spiritualité.
+			Les points d'eau, tels que les puits, les rivières, les lacs et les mares, sont perçus comme des sources vitales pour la survie des communautés.
+			Ils représentent la fertilité, non seulement du sol, mais aussi des relations humaines, car l'eau est essentielle à l'agriculture et à l'élevage.
+			 Beaucoup de points d'eau sont considérés comme sacrés et sont associés à des croyances spirituelles.
+			 Par exemple, certaines sources peuvent être dédiées à des ancêtres ou à des divinités, et des rituels de purification ou de bénédiction peuvent y être pratiqués</p>
+			<p style="text-align: justify;">Les points d'eau servent souvent de lieux de rassemblement communautaire. 
+			Ils sont des espaces où les gens se rencontrent, échangent des nouvelles, partagent des histoires et renforcent les liens sociaux.</p>
+	</div>	
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        var map = L.map('map').setView([14.4974, -14.4524], 7);
+
+        var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var manIcon = L.icon({
+            iconUrl: 'L.icon.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+        });
+
+        var userLocationMarker, userLocationCircle;
+
+        map.locate({setView: true, maxZoom: 8});
+
+        function onLocationFound(e) {
+            var radius = e.accuracy / 2;
+
+            if (userLocationMarker) {
+                map.removeLayer(userLocationMarker);
+                map.removeLayer(userLocationCircle);
+            }
+
+            userLocationMarker = L.marker(e.latlng, {icon: manIcon}).addTo(map)
+                .bindPopup("Vous êtes à " + radius + " mètres de ce point").openPopup();
+
+            userLocationCircle = L.circle(e.latlng, radius).addTo(map);
+        }
+
+        function onLocationError(e) {
+            alert("Erreur de localisation: " + e.message);
+        }
+
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
+
+        function getCategoryColor(category) {
+            switch (category) {
+                case 'Urban': return '#1f77b4';
+                case 'Suburban': return '#2ca02c';
+                case 'Rural': return '#ff7f0e';
+                default: return '#d62728';
+            }
+        }
+
+        function style(feature) {
+            return {
+                fillColor: getCategoryColor(feature.properties.category),
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.7
+            };
+        }
+
+        function onEachFeature(feature, layer) {
+            layer.on({
+                mouseover: function(e) {
+                    var layer = e.target;
+                    layer.setStyle({
+                        weight: 5,
+                        color: '#666',
+                        dashArray: '',
+                        fillOpacity: 0.7
+                    });
+                    displayInfo(feature.properties);
+                },
+                mouseout: function(e) {
+                    urbanLayer.resetStyle(e.target);
+                },
+                click: function(e) {
+                    // Définir un rayon de 80 km autour de la localité cliquée
+                    var radiusInMeters = 100000; // 100 km en mètres
+                    var latlng = e.latlng;
+
+                    // Créer un cercle englobant avec le rayon de 100 km
+                    var bounds = latlng.toBounds(radiusInMeters);
+
+                    // Zoom progressif sur la zone définie (rayon de 100 km)
+                    map.flyToBounds(bounds, {
+                        duration: 4  // Durée du zoom (4 secondes)
+                    });
+
+                    // Attendre 4 secondes avant la redirection
+                    setTimeout(function() {
+                        window.location.href = feature.properties.name + '.html';
+                    }, 4000); // Délai de 4000ms (4 secondes)
+                }
+            });
+        }
+
+        var communes = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Louga",
+                        "category": "Urban",
+                        "population": 15000,
+                        "area": 5,
+                        "description": "La région de Louga est connue pour son agriculture et son élevage."
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-15.489328, 15.322377]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Sédhiou",
+                        "category": "Urban",
+                        "population": 20000,
+                        "area": 3,
+                        "description": "Sédhiou, située au sud du Sénégal, est une région forestière."
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-15.604041, 12.882535]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Kaffrine",
+                        "category": "Urban",
+                        "population": 14000,
+                        "area": 6,
+                        "description": "Kaffrine est une région au centre du Sénégal."
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-15.251223, 14.197065]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Tambacounda",
+                        "category": "Urban",
+                        "population": 12000,
+                        "area": 4,
+                        "description": "Tambacounda, la plus grande région du Sénégal en superficie."
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-13.6670, 13.7701]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Kédougou",
+                        "category": "Urban",
+                        "population": 25000,
+                        "area": 7,
+                        "description": "Kédougou est une région montagneuse et minière du Sénégal."
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-12.223458, 12.840755]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Kolda",
+                        "category": "Urban",
+                        "population": 18000,
+                        "area": 6,
+                        "description": "La région de Kolda ."
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-14.413551, 13.070231]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Dakar",
+                        "category": "Urban",
+                        "population": 22000,
+                        "area": 8,
+                        "description": "Dakar."
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-17.364725, 14.756236]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Diourbel",
+                        "category": "Urban",
+                        "population": 14000,
+                        "area": 4,
+                        "description": "Diourbel"
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [ -16.220911, 14.763360]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Fatick",
+                        "category": "Urban",
+                        "population": 30000,
+                        "area": 10,
+                        "description": "Fatick"
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-16.522105, 13.864907]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Kaolack",
+                        "category": "Urban",
+                        "population": 16000,
+                        "area": 5,
+                        "description": "Kaolack"
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-16.076434, 14.165550]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Matam",
+                        "category": "Urban",
+                        "population": 19000,
+                        "area": 7,
+                        "description": "Matam"
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-13.720730, 15.225636]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Saint-Louis",
+                        "category": "Urban",
+                        "population": 13000,
+                        "area": 4,
+                        "description": "Saint-Louis"
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-15.143082, 16.259473]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Thiès",
+                        "category": "Urban",
+                        "population": 20000,
+                        "area": 3,
+                        "description": "Thiès"
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-16.934167, 14.795050]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Ziguinchor",
+                        "category": "Urban",
+                        "population": 17000,
+                        "area": 6,
+                        "description": "Ziguinchor."
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-16.264105, 12.564555]
+                    }
+                }
+
+            ]
+        };
+
+        // Création des couches pour les régions urbaines
+        var urbanLayer = L.geoJSON(communes, {
+            filter: function (feature, layer) {
+                return feature.properties.category === "Urban";
+            },
+            style: style,
+            onEachFeature: onEachFeature
+        });
+
+        urbanLayer.addTo(map);
+
+        // Contrôle de recherche
+        var searchControl = new L.Control.Search({
+            layer: L.layerGroup([urbanLayer]),
+            propertyName: 'name',
+            marker: false,
+            moveToLocation: function(latlng, title, map) {
+                map.setView(latlng, 14);
+            }
+        });
+
+        map.addControl(searchControl);
+
+        var baseLayers = {
+            "OpenStreetMap": osmLayer,
+            "Google Satellite Hybrid": googleSatelliteHybrid
+        };
+
+        var overlayLayers = {
+            "Urban": urbanLayer
+        };
+
+        L.control.layers(baseLayers, overlayLayers).addTo(map);
+
+    </script>
+</body>
+</html>

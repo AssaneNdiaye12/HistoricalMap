@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saint-Louis</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Saint-Louis, située au nord du Sénégal, se distingue par un réseau hydrologique complexe, rendant la gestion de ses points d'eau d'une importance stratégique. Cette gestion influence directement les conditions de vie des populations et l'économie locale. Le fleuve Sénégal, qui traverse la région, constitue un axe vital pour l'agriculture, la pêche et l'approvisionnement en eau potable. Par ailleurs, les marais et zones humides présentes dans la région favorisent la biodiversité et préservent les équilibres écologiques.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Le puits d’El hadji Omar Tal</li>
+                <li>Le puits de Cheikh Ahmadou Bamba </li>                 
+				<li>Le puits de Ndiébène Gandiol </li>
+				<li>Le puits de Guet Ndar </li>
+				<li>Le puits de Diama</li>
+				<li>Le fleuve Sénégal</li>
+				<li>Le lac de Guiers</li>
+				<li>La rivière de Minguène Boy</li>
+				<li>Le marigot de Khor </li>				
+			</ul>	
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="SL1.jpg" data-lightbox="gallery" data-title="Galerie Saint-Louis">
+                    <img src="SL1.jpg" alt="Galerie Saint-Louis" class="gallery-image">
+                </a>
+                <a href="SL2.jpg" data-lightbox="gallery" data-title="Galerie Saint-Louis">
+                    <img src="SL2.jpg" alt="Galerie Saint-Louis" class="gallery-image">
+                </a>
+                <a href="SL3.jpg" data-lightbox="gallery" data-title="Galerie Saint-Louis">
+                    <img src="SL3.jpg" alt="Galerie Saint-Louis" class="gallery-image">
+                </a>
+				<a href="SL4.jpg" data-lightbox="gallery" data-title="Galerie Saint-Louis">
+                    <img src="SL4.jpg" alt="Galerie Saint-Louis" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([16.211761, -15.481405], 8.5); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Le puits d’El hadji Omar Tal",
+                "lat": 16.031667,
+                "lon": -16.503611,
+                "description": "Le puits d’El Hadji Omar Tall, situé à Saint-Louis, constitue un point d'eau historique et symbolique majeur dans la région. Nommé d'après un leader religieux et politique influent du XIXe siècle, El Hadji Omar Tall, il témoigne d'un moment crucial de l'histoire locale. À une époque, Saint-Louis a dû faire face à un déficit d'eau potable, en raison de la pollution de l'eau du fleuve. Selon le chef de quartier de l'île Nord, c'est alors qu'El Hadji Omar Tall, désireux de faire ses ablutions, frappa le sol avec son bâton, faisant jaillir l'eau. Aujourd'hui, cette eau est considérée comme sacrée, attirant des visiteurs en quête d'utilisations médicales ou mystiques.",
+                "image": "SL1.jpg"
+            },
+            {
+                "name": "Le puits de Cheikh Ahmadou Bamba ",
+                "lat": 16.521944,
+                "lon": -15.506111,
+                "description": "Le puits de Cheikh Ahmadou Bamba à Dagana revêt une grande importance historique et culturelle. Selon l'Imam, gardien du puits, le Cheikh avait l'habitude de confier la teinture de ses vêtements à une talentueuse teinturière nommée Sokhna Mbana Ndiaye. Face à des difficultés d'approvisionnement en eau pour ses teintures, le Cheikh creusa un trou, en grattant le sol devant la maison de son hôte, Tarsier Ahmad Diop, d'où jaillit une source d'eau. Ce trou a ensuite été transformé en puits permanent, désormais protégé par une grille en fer et une porte. Le puits est considéré comme un lieu sacré, attirant les populations locales en quête d'une eau réputée pour ses vertus curatives et apaisantes, dans l'espoir d'en recevoir des bénédictions.",
+                "image": "SL2.jpg"
+            },
+            {
+                "name": "Le puits de Ndiébène Gandiol",
+                "lat": 15.885610,
+                "lon": -16.496201,
+                "description": "Situé dans le village de Ndiébène Gandiol, ce puits est l'un des plus emblématiques de la région. Il se distingue par son architecture en pierre de taille et son ornementation raffinée, notamment par les motifs sculptés qui ornent ses parois. Les habitants du village veillent à son entretien et lui consacrent des rituels réguliers.",
+                "image": "SL3.jpg"
+            },
+            {
+                "name": "Les deux puits historiques du village de ogo",
+                "lat":  16.022490,
+                "lon": -16.507745,
+                "description": "Ce puits traditionnel est situé dans le quartier de Guet Ndar, l'un des plus anciens de la ville de Saint-Louis. Érigé en pierres et en béton, il arbore une forme octogonale, typique des puits de cette région. Le puits de Guet Ndar sert non seulement à l'approvisionnement en eau, mais également de lieu de rassemblement et de sociabilité pour les habitants.",
+                "image": "SL4.jpg"
+            },
+            {
+                "name": "Le puits de Diama ",
+                "lat": 16.208203,
+                "lon": -16.403782,
+                "description": "Situé dans la commune de Diama, ce puits s'inscrit au sein d'un ensemble plus vaste incluant des bassins et des aires de lavage. Son architecture, alliant pierre et bois, témoigne des savoir-faire traditionnels de construction caractéristiques de la région. Le puits de Diama est emblématique de l'importance de ces infrastructures dans la vie quotidienne et la culture des communautés rurales.",
+                "image": "SL5.jpg"
+            },
+            {
+                "name": "Le fleuve Sénégal",
+                "lat": 16.477992,
+                "lon": -15.673026,
+                "description": "Le fleuve Sénégal, principal cours d'eau de la région, traverse Saint-Louis avant de rejoindre l'océan Atlantique. Il revêt une importance culturelle et économique, ayant été une voie essentielle de commerce pour les empires soudano-africains avant de devenir stratégique pour le commerce des esclaves avec l'arrivée des Européens au XVème siècle. Sous l'administration française, des infrastructures ont été développées pour son exploitation. Depuis l'indépendance des pays riverains dans les années 1960, le fleuve demeure crucial pour l'agriculture, l'énergie et la pêche, et l'Organisation pour la mise en valeur du fleuve Sénégal (OMVS) a été créée en 1972 pour en assurer une gestion durable. Cependant, il fait face à des défis tels que la pollution et le changement climatique, affectant sa qualité, qui varie selon les saisons, passant de douce à salée.",
+                "image": "SL6.jpg"
+            },
+            {
+                "name": "Le lac de Guiers ",
+                "lat": 16.155454,
+                "lon": -15.889195,
+                "description": "Le lac de Guiers, situé dans le delta du fleuve Sénégal, s'étend sur environ 50 km et couvre près de 300 km², renfermant environ 600 millions de mètres cubes d'eau. Relié à Richard Toll par le canal de la Taouey, il irrigue plus de 30 000 hectares. Historiquement, il était alimenté par le fleuve Sénégal et la vallée du Ferlo, surtout en période pluvieuse. Considéré comme la plus grande réserve d'eau douce du Sénégal, il alimente les besoins en eau potable de Dakar grâce aux usines de pompage de la SONES. Les barrages de Diama et Manantali ont amélioré la qualité et le remplissage des eaux du lac, bien que certains villages dépendent encore de forages et d'unités de potabilisation.",
+                "image": "SL7.jpg"
+            },
+            {
+                "name": "La rivière de Minguène Boy",
+                "lat":  16.017263,
+                "lon": -16.356275,
+                "description": "La rivière de Minguène Boy, qui traverse le village éponyme dans la région de Saint-Louis, constitue un élément vital pour les habitants, favorisant les activités de baignade, d'agriculture et de pêche. Selon des enquêtes ethnographiques, cette rivière revêt un caractère mythique, car le génie protecteur, Mam Batt Boy, veille sur la sécurité des villageois, ce qui explique l'absence de noyades parmi la population locale. Cependant, cette précieuse ressource est aujourd'hui menacée, en raison de la propagation d'une fleur introduite par un homme blanc, qui risque d'entraîner la disparition de la rivière.",
+                "image": "SL8.jpg"
+            },
+            {
+                "name": "Le marigot de Khor",
+                "lat": 15.984758,
+                "lon": -16.479856,
+                "description": "Le marigot de Khor, situé dans la région de Saint-Louis au Sénégal, est une zone humide saisonnière essentielle pour la biodiversité locale et les activités économiques des riverains. Il abrite de nombreuses espèces d'oiseaux, de poissons et de plantes aquatiques, tout en soutenant l'agriculture et la pêche. Toutefois, ce marigot est menacé par les changements climatiques et les activités humaines, soulignant la nécessité de sa conservation.",
+                "image": "SL9.jpg"
+            }
+			
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

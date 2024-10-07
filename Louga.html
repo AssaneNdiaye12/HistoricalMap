@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Louga</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Louga, située au nord-ouest du Sénégal, est une région riche en histoire et en traditions. Elle s'étend des rives du fleuve Sénégal à l'ouest, jusqu'aux plaines arides du Ferlo à l'est. Louga est historiquement liée au royaume du Djolof, une confédération précoloniale qui regroupait plusieurs royaumes et dominait une grande partie du Sénégal entre le 14e et le 16e siècle. Le Djolof joua un rôle central dans le commerce transsaharien, facilitant les échanges de marchandises entre l'Afrique de l'Ouest et le monde arabe</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Marigot Ali Ba</li>
+                <li>Marigot Loumbol Yero</li>
+                <li>Marigot de Yang-Yang</li>
+                <li>Puits de khalom</li>
+                <li>Puits Thierno Sall</li>
+                <li>Puits de Yang-Yang</li>
+                           
+        </div>
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="LG3.jpg" data-lightbox="gallery" data-title="Puits de khalom">
+                    <img src="LG3.jpg" alt="Galerie Louga" class="gallery-image">
+                </a>
+                <a href="LG3a.jpg" data-lightbox="gallery" data-title="Puits de khalom">
+                    <img src="LG3a.jpg" alt="Galerie Louga" class="gallery-image">
+                </a>
+                <a href="LG2.jpg" data-lightbox="gallery" data-title="Galerie Louga">
+                    <img src="LG2.jpg" alt="Galerie Louga" class="gallery-image">
+                </a>
+				
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([ 15.322377,-15.489328], 8.5); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Marigot Ali Ba",
+                "lat": 15.234567,
+                "lon": -16.232187,
+                "description": "D'après le chef du village de Moré Ladinaabe, Sidy Ka, le marigot Ali Ba était le point de rassemblement de la communauté. Les anciens y racontaient leurs histoires, les enfants y jouaient, et l'on y prononçait des prières pour invoquer la pluie.",
+                "image": "LG1.jpg"
+            },
+            {
+                "name": "Marigot Loumbol Yero",
+                "lat": 15.128965,
+                "lon": -16.127564,
+                "description": "Le marigot Loumbol Yero est un lieu de rencontre pour l'ensemble des habitants du village, favorisant les interactions sociales et renforçant la cohésion. C’est un espace où les villageois se réunissent pour divers événements sociaux et culturels.",
+                "image": "LG2.jpg"
+            },
+            {
+                "name": "Puits de khalom",
+                "lat": 15.275970,
+                "lon": -16.530235,
+                "description": "Le puits de Kalom, selon le communicateur traditionnel Cheikh Alioune Sène, est réputé pour ses pouvoirs mystiques, enveloppés de mystère. Découvert au XVIe siècle, en pleine période de grande sécheresse, alors que l'eau se faisait rare dans toute la région du Cayor, ce puits devint l'enjeu de violents affrontements entre souverains, désireux d'en prendre le contrôle.",
+                "image": "LG3.jpg"
+            },
+            {
+                "name": "Puits Thierno Sall",
+                "lat": 15.253904,
+                "lon": -16.372483,
+                "description": "Ce puits, érigé au centre du village afin de rendre l'accès à l'eau plus aisé, est non seulement une source vitale d'eau potable, mais il incarne également une valeur culturelle et historique profonde. Il symbolise la résilience et l'ingéniosité des communautés rurales.",
+                "image": "LG4.jpg"
+            },            
+            {
+                "name": "Yang-Yang 1 (puits abandonnés) ",
+                "lat": 15.58850,
+                "lon": -15.33983,
+                "description": "Les puits sont souvent des sources essentielles d'approvisionnement en eau. Leur emplacement et leur construction peuvent indiquer comment les communautés passées géraient leurs ressources en eau, quelles technologies étaient disponibles, et comment ces pratiques ont évolué au fil du temps.",
+                "image": "YY1.jpg"
+            },
+            {
+                "name": "Yang-Yang 2 (puits abandonnés)",
+                "lat": 15.58564,
+                "lon": -15.34583,
+                "description": "Les puits sont souvent des sources essentielles d'approvisionnement en eau. Leur emplacement et leur construction peuvent indiquer comment les communautés passées géraient leurs ressources en eau, quelles technologies étaient disponibles, et comment ces pratiques ont évolué au fil du temps.",
+                "image": "YY2.jpg"
+            },           
+            {
+                "name": "Yang-Yang 3",
+                "lat":15.59360,
+                "lon": -15.34438,
+                "description": "Ces puits, au-delà de leur fonction d'approvisionnement en eau, sont devenus des lieux de rassemblement et de vie sociale, témoignant de la solidarité entre les habitants du village. Aujourd'hui, les autorités locales et régionales s'efforcent de valoriser et de préserver ce patrimoine hydraulique traditionnel en encourageant la réhabilitation et la maintenance des puits encore en activité, afin d'assurer un accès durable à l'eau pour les habitants de Yang. -Yang.",
+                "image": "YY3.jpg"
+            }
+                 
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

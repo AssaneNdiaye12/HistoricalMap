@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sédhiou</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Louga, située au nord-ouest du Sénégal, est une région riche en histoire et en traditions. Elle s'étend des rives du fleuve Sénégal à l'ouest, jusqu'aux plaines arides du Ferlo à l'est. Louga est historiquement liée au royaume du Djolof, une confédération précoloniale qui regroupait plusieurs royaumes et dominait une grande partie du Sénégal entre le 14e et le 16e siècle. Le Djolof joua un rôle central dans le commerce transsaharien, facilitant les échanges de marchandises entre l'Afrique de l'Ouest et le monde arabeLa région de Sédhiou se distingue par la richesse de son patrimoine culturel et par une dynamique économique singulière. Elle incarne de manière exemplaire comment le respect des traditions, allié à une gestion judicieuse des ressources naturelles, peut favoriser un développement à la fois durable et harmonieux.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Puits de Kolomba</li>
+                <li>Le puits de Tendaba de Diattaconda</li>
+                <li>Puits de Kolong</li> 
+				<li>Le fleuve Casamance</li>
+        </div>
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="SD1.jpg" data-lightbox="gallery" data-title="Sédhiou">
+                    <img src="SD.jpg" alt="Galerie Sédhiou" class="gallery-image">
+                </a>
+                <a href="SD2.jpg" data-lightbox="gallery" data-title="Sédhiou">
+                    <img src="SD2.jpg" alt="Galerie Sédhiou" class="gallery-image">
+                </a>
+                <a href="SD3.jpg" data-lightbox="gallery" data-title="Sédhiou">
+                    <img src="SD3.jpg" alt="Galerie Sédhiou" class="gallery-image">
+                </a>
+				<a href="DSD4.jpg" data-lightbox="gallery" data-title="Sédhiou">
+                    <img src="DP4.jpg" alt="Galerie Sédhiou" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([ 12.882535,-15.604041], 9.50); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Puits de Kolomba",
+                "lat": 12.576420,
+                "lon": -15.876903,
+                "description": "Le puits de Kolomba, reconnu comme un lieu sacré et mystérieux, constitue un élément essentiel du patrimoine culturel de la communauté locale depuis des siècles. Bien qu'il soit situé à l'intérieur d'une concession familiale appartenant à la famille Diassy, il est en réalité un bien commun.",
+                "image": "SD1.jpg"
+            },
+            {
+                "name": "Le puits de Tendaba de Diattaconda",
+                "lat":  12.533466,
+                "lon": -15.944077,
+                "description": "Selon certaines légendes locales, l’apparition du puits serait liée au passage d’Omar Foutouyou Fall. M. Diallo raconte qu'au cours de son voyage, ce dernier aurait prié afin que les habitants aient accès à une source d’eau. En réponse à ses supplications, le puits serait apparu miraculeusement.",
+                "image": "SD2.jpg"
+            },
+            {
+                "name": "Puits de Kolong",
+                "lat": 12.584764,
+                "lon": -15.959971,
+                "description": "Le puits de Kolong est associé à plusieurs légendes et croyances mystiques. Les habitants croient qu'il abrite un serpent qu'il convient d'apaiser par des offrandes lors de cérémonies, afin de garantir de bonnes récoltes. Chaque année, une cérémonie est organisée au cours de laquelle des aliments sont offerts au serpent, et des prières sont prononcées pour apaiser les forces surnaturelles.",
+                "image": "SD3.jpg"
+            }
+                 
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

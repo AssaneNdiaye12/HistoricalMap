@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaffrine</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Kaffrine fut fondée en 1602 par des populations originaires de Namandiru, une zone historique située entre le Sénégal et le Mali, aujourd'hui disparue. Autrefois, cette région portait le nom de Ndoukoumane et s'étendait sur un vaste territoire allant de l'actuelle ville de Kaffrine jusqu'aux limites de la localité de Koussanar, située dans la région de Tambacounda.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Le puits de Thiekerou à Birkilane</li>
+                <li>Le puits de Maagè à Wanar</li>
+                <li>Le marigot de Boye </li> 
+				<li>Le marigot de Bondie</li>
+        </div>
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="KF1.jpg" data-lightbox="gallery" data-title="Galerie Kaffrine">
+                    <img src="KF.jpg" alt="Galerie Kaffrine" class="gallery-image">
+                </a>
+                <a href="KF2.jpg" data-lightbox="gallery" data-title="Galerie Kaffrine">
+                    <img src="KF2.jpg" alt="Galerie Kaffrine" class="gallery-image">
+                </a>
+                <a href="KF3.jpg" data-lightbox="gallery" data-title="Galerie Kaffrine">
+                    <img src="KF3.jpg" alt="Galerie Kaffrine" class="gallery-image">
+                </a>
+				<a href="KF4.jpg" data-lightbox="gallery" data-title="Galerie Kaffrine">
+                    <img src="KF4.jpg" alt="Galerie Kaffrine" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([ 14.220728,-15.553482], 9.5); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Le puits de Thiekerou à Birkilane",
+                "lat": 14.13000,
+                "lon": -15.734722,
+                "description": "Le puits de Thiekerou, creusé au XVIIe siècle par Boure Koulemane Ndione, fondateur de Birkilane, a longtemps été une source essentielle pour la région. Il fournissait de l'eau aux habitants de Birkilane et des villages environnants, et servait aussi de lieu de rencontre pour les femmes qui y faisaient la lessive et discutaient de leur quotidien. Connu pour la douceur de son eau, ce puits approvisionnait même le chef de canton, Thiendella Fall.",
+                "image": "KF1.jpg"
+            },
+            {
+                "name": "Le puits de Maagè à Wanar",
+                "lat":  13.883333,
+                "lon": -15.616667,
+                "description": "Wanar, ancien village de la commune de Maabo, abritait le puits Maagè, première source d'eau construite par les fondateurs. Face aux difficultés d'accès à l'eau, ce puits devint essentiel pour les villageois, qui le protégèrent par un mur défensif appelé Sangue. Actuellement asséché, Maagè ne subsiste que sous la forme d'un puits entouré de son mur pour des raisons de sécurité.",
+                "image": "KF2.jpg"
+            },
+            {
+                "name": "Le marigot de Boye",
+                "lat": 14.436111,
+                "lon": -15.618611,
+                "description": "Le marigot de Wendou Boyé, fondé par Bidjie Ba, est un lieu chargé de mystères et d'interdits, tels que l’interdiction de couper des branches ou de proférer des insultes aux abords. Plusieurs récits rapportent des malédictions s'abattant sur ceux qui enfreignaient ces règles. Le marigot servait également de lieu de campement et de sacrifices rituels, et des offrandes y étaient traditionnellement faites en gage de respect, renforçant ainsi sa dimension spirituelle et mystique.",
+                "image": "KF3.jpg"
+            },
+            {
+                "name": "Le marigot de Bondie",
+                "lat": 14.420363,
+                "lon": -15.574620,
+                "description": "Fondé en 1935 par les Sérères, le village de Bondie devint un lieu important en raison de son marigot sacré, Howango, qui servait d’approvisionnement en eau pour les habitants et les étrangers. En période de sécheresse, le marigot était le centre de rituels pour invoquer la pluie, un rôle qui renforçait son importance spirituelle et historique au sein de la communauté.",
+                "image": "KF4.jpg"
+            }
+			
+                 
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

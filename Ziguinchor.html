@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ziguinchor</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Ziguinchor, située en basse Casamance, est une terre empreinte de mystères et riche de traditions ancestrales. Ce territoire verdoyant et fertile est traversé par de nombreux cours d'eau, puits et bolongs (bras de mer), qui jouent un rôle central dans la vie quotidienne et spirituelle de ses habitants. Ces sites, tant naturels qu'anthropiques, ne sont pas seulement des sources de subsistance matérielle, mais également des lieux investis d'une profonde signification religieuse et culturelle.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Le puits d’El hadji Omar Tall</li>
+                <li>L’Océan</li>
+				<li>La rivière sacrée d'Enampor	</li>			
+			</ul>	
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="ZG1.jpg" data-lightbox="gallery" data-title="Galerie Ziguinchor">
+                    <img src="ZG1.jpg" alt="Galerie Ziguinchor" class="gallery-image">
+                </a>
+                <a href="ZG2.jpg" data-lightbox="gallery" data-title="Galerie Ziguinchor">
+                    <img src="ZG2.jpg" alt="Galerie Ziguinchor" class="gallery-image">
+                </a>
+                <a href="ZG3.jpg" data-lightbox="gallery" data-title="Galerie Ziguinchor">
+                    <img src="ZG3.jpg" alt="Galerie Ziguinchor" class="gallery-image">
+                </a>
+				<a href="ZG4.jpg" data-lightbox="gallery" data-title="Galerie Ziguinchor">
+                    <img src="ZG4.jpg" alt="Galerie Ziguinchor" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([12.755664,-16.311112], 10); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Le puits d’El hadji Omar Tall",
+                "lat":  12.474865,
+                "lon": -16.777670,
+                "description": "Le puits d'El Hadji Omar, situé à Diembéring, est un site mystique et historique. Découvert par le guide religieux El Hadji Omar Tall lors de son séjour dans le village, il devint un lieu d'approvisionnement en eau pour la population. Bien que l'eau du puits fût insuffisante au départ, les prières du guide en firent une source inépuisable. Aujourd'hui, ce puits est un lieu de visite et de recueillement, témoignant de l'importance spirituelle d'El Hadji Omar pour la communauté.",
+                "image": "ZG1.jpg"
+            },
+            {
+                "name": "L’Océan",
+                "lat": 12.467210,
+                "lon": -16.791272,
+                "description": "À Diembéring, la cérémonie de veuvage, se tenant au bord de l’océan, inclut une purification rituelle de la veuve pour marquer la fin de cette période. Des offrandes et prières sont faites en l’honneur des ancêtres et du défunt. La communauté se réunit pour soutenir la veuve, lui offrant réconfort et solidarité durant cette épreuve.",
+                "image": "ZG2.jpg"
+            },
+            {
+                "name": "La rivière sacrée d'Enampor",
+                "lat":  12.506309,
+                "lon": -16.455964,
+                "description": "Enampor, village sacré de Basse-Casamance, accueille les cérémonies de circoncision au bord d’une rivière sacrée, où la présence des femmes est interdite. Ces rituels d'initiation, propres au royaume « AFILÉDIOU », ont lieu tous les 32 ans, avec des cérémonies intermédiaires tous les deux ans pour les enfants de 2 ans.",
+                "image": "ZG3.jpg"
+            },
+            {
+                "name": "Les bolongs de Diembéring",
+                "lat":  12.462481,
+                "lon": -16.708906,
+                "description": "En Basse-Casamance, les bolongs sont considérés comme des lieux sacrés par les habitants, où résident des esprits ancestraux. Les pêcheurs, avant d'exercer leur activité, doivent demander la bénédiction des esprits. Ces pratiques révèlent l'importance de l'eau, non seulement pour la survie matérielle, mais aussi pour le bien-être spirituel des communautés locales.",
+                "image": "ZG4.jpg"
+            }
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

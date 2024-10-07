@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fatick</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Fatick, caractérisée par ses plaines inondables et ses mangroves, particulièrement aux abords du delta du Saloum, a toujours accordé une importance centrale aux sources d'eau dans l'histoire, la culture et la spiritualité des populations locales, notamment celles des Sérères. Parmi les lieux notables, le puits de Ndiamsil se distingue par son association à une victoire militaire, rendue possible grâce à l'apparition d'une eau sacrée jaillie du sol. De même, le puits d'Elhadji Omar Tall à Simal incarne un lien spirituel profond avec l'Islam. Les marigots de Fandane et de Mbel Ô Boof sont également des sites significatifs, ayant non seulement été témoins de batailles historiques, mais aussi de rituels mystiques, tels que les cérémonies de Xooy, où des prédictions sont faites au bénéfice de la communauté.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Le puits de Dioguoye à Ndiamsil</li>
+                <li>Le puits d’El hadji Omar à Simal</li>                 
+				<li>Le marigot de Fandane</li>
+				<li>Le marigot de Mbel ô boof</li>
+				<li>Le rivière de Sangomar</li>
+				<li>La rivière de Djilasse</li>
+								
+			</ul>	
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="FT1.jpg" data-lightbox="gallery" data-title="Galerie Fatick">
+                    <img src="FT1.jpg" alt="Galerie Fatick" class="gallery-image">
+                </a>
+                <a href="FT2.jpg" data-lightbox="gallery" data-title="Galerie Fatick">
+                    <img src="FT2.jpg" alt="Galerie Fatick" class="gallery-image">
+                </a>
+                <a href="FT3.jpg" data-lightbox="gallery" data-title="Galerie Faticks">
+                    <img src="FT3.jpg" alt="Galerie Faticks" class="gallery-image">
+                </a>
+				<a href="FT4.jpg" data-lightbox="gallery" data-title="Galerie Fatick">
+                    <img src="FT4.jpg" alt="Galerie Fatick" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([14.167023, -16.477159], 10); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Le puits de Dioguoye à Ndiamsil",
+                "lat": 14.473419,
+                "lon": -16.261398,
+                "description": "Situé dans le village de Ndiamsil, région de Fatick, ce puits historique a été créé en 1443 lors d’une bataille entre Faarar et Jajeel. Le puits est lié à une légende selon laquelle le cheval du roi Diogo Gnilane, nommé Sirgante, aurait découvert l'eau, ce qui conduisit à la victoire des troupes du roi. Ce puits revêt une grande importance culturelle et historique pour la communauté locale.",
+                "image": "FT1.jpg"
+            },
+            {
+                "name": "Le Puits d’El Hadji Omar à Simal",
+                "lat": 14.149863,
+                "lon": -16.637806,
+                "description": "Situé à Simal, ce puits est associé à El Hadji Omar Tall, un leader religieux influent. Selon la tradition locale, il y aurait effectué ses ablutions lors de ses voyages. Bien qu’il existe des débats sur ses origines, le puits reste un site vénéré, fournissant de l’eau douce et jouant un rôle clé dans les traditions locales​.",
+                "image": "FT2.jpg"
+            },
+            {
+                "name": "Le Marigot de Fandane",
+                "lat": 14.452791,
+                "lon": -16.228985,
+                "description": "Situé près de Diakhao, ce marigot est connu pour son rôle historique lors de la bataille de 1867 entre Maba Diakhou Ba et le Royaume du Sine. L'eau du marigot aurait viré au rouge sous l’effet du sang des guerriers tombés. Il est devenu un symbole de la victoire du Royaume du Sine et est désormais un site historique important pour la communauté.",
+                "image": "FT3.jpg"
+            },
+            {
+                "name": "Le Marigot de Mbel Ô Boof",
+                "lat": 14.477673,
+                "lon": -16.226001,
+                "description": "Situé dans le village de Boof, ce marigot a une grande importance culturelle et spirituelle. C’est le lieu de la cérémonie annuelle du « Xooy »  où les saltigués (guides spirituels) font des prédictions pour la communauté. Le marigot est aussi lié à la préparation des guerres et à d’autres rites mystiques.",
+                "image": "FT4.jpg"
+            },
+            {
+                "name": "La Rivière de Sangomar",
+                "lat": 13.890178,
+                "lon": -16.728104,
+                "description": "Cette rivière, située dans le delta du Saloum, est centrale dans l’histoire et les pratiques spirituelles du village de Dionewar. Elle est liée à une légende sur la fondation du village et sert de lieu spirituel où les musulmans et non-musulmans viennent prier. C’est un lieu de pèlerinage important pour les cérémonies culturelles et religieuses.",
+                "image": "FT5.jpg"
+            },
+            {
+                "name": "La Rivière de Djilasse",
+                "lat": 14.232845,
+                "lon": -16.63927,
+                "description": "À Djilasse, la rivière est essentielle à l’agriculture et aux pratiques spirituelles. L’eau est considérée comme ayant des propriétés purificatrices, et les traditions locales incluent des cérémonies de purification et des offrandes aux esprits qui habitent la rivière. Elle est un élément central de l'identité culturelle et spirituelle de la communauté",
+                "image": "FT6.jpg"
+            }
+			
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>

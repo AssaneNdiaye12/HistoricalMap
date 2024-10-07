@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kédougou</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #map-container {
+            width: 65%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            width: 35%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #info, #gallery, #comments {
+            margin-bottom: 20px;
+        }
+        .gallery-row {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-image {
+            width: auto;
+            height: 150px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="content">
+        <div id="info">                    
+            <p style="text-align: justify;">La région de Kédougou, située au sud-est du Sénégal et frontalière du Mali et de la Guinée, se distingue par sa beauté pittoresque et sa richesse culturelle. Cette zone est également renommée pour son abondance hydrologique, traversée par de nombreux cours d'eau qui jouent un rôle essentiel dans l'économie locale et la vie quotidienne de ses habitants. Parmi les ressources hydriques les plus remarquables, on compte la Falémé, la cascade de Kafory, le puits de la grande mosquée, ainsi que le fleuve Gambie, qui sont d’une importance capitale pour la région.</p>
+            <h4>SOURCES D'EAU SACRÉES OU HISTORIQUES</h4>
+            <ul>
+                <li>Falémé</li>
+                <li>La cascade de Kafory</li>                 
+				<li>Le puits de la grande mosquée de Kédougou</li>
+				<li>La cascade de Dindéfélo</li>
+				<li>La rivière de Diara</li>
+				<li>Le puits de Salémata</li>
+        </div>
+        <div id="gallery">
+            <h3>Galerie</h3>
+            <div class="gallery-row">
+                <a href="KD1.jpg" data-lightbox="gallery" data-title="Galerie Kédougou">
+                    <img src="KD1.jpg" alt="Galerie Kédougou" class="gallery-image">
+                </a>
+                <a href="KD2.jpg" data-lightbox="gallery" data-title="Galerie Kédougou">
+                    <img src="KD2.jpg" alt="Galerie Kédougou" class="gallery-image">
+                </a>
+                <a href="KD3.jpg" data-lightbox="gallery" data-title="Galerie Kédougou">
+                    <img src="KD3.jpg" alt="Galerie Kédougou" class="gallery-image">
+                </a>
+				<a href="KD4.jpg" data-lightbox="gallery" data-title="Galerie Kédougou">
+                    <img src="KD4.jpg" alt="Galerie Kédougou" class="gallery-image">
+                </a>
+                <!-- Ajoutez d'autres images de la galerie ici -->
+            </div>
+        </div>
+        <div id="comments">
+            <h3>Commentaires</h3>
+            <textarea rows="5" placeholder="Laissez un commentaire..."></textarea>
+            <button>Soumettre</button>
+            <!-- Liste des commentaires -->
+            <div>
+                <p><strong>Assane Ndiaye:</strong> Très bel endroit!</p>
+                <p><strong>Momadou Diop:</strong> J'adore l'histoire de cette commune.</p>
+                <!-- Ajoutez d'autres commentaires ici -->
+            </div>
+            <a href="index.html">Retour à la carte</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.1/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script>
+        var googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        // Initialisation de la carte
+        var map = L.map('map').setView([ 12.840755,-12.223458], 8.5); // Coordonnées centrales de Gueule Tapée-Fass-Colobane
+
+        // Couches de base
+        var googleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=' + googleMapsApiKey, {
+            attribution: 'Map data ©2021 Google',
+            maxZoom: 20
+        });
+
+        var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Ajout de la couche OpenStreetMap par défaut
+        openStreetMap.addTo(map);
+
+        // Liste des lieux
+        var locations = [
+            {
+                "name": "Falémé",
+                "lat": 12.847001,
+                "lon": -11.410289,
+                "description": "Historiquement, la Falémé a permis l'agriculture le long de ses rives et a une importance culturelle significative pour les communautés locales. Cependant, les activités minières ont gravement dégradé la rivière, compromettant la qualité de l’eau et perturbant l'écosystème.",
+                "image": "KD1.jpg"
+            },
+            {
+                "name": "La cascade de Kafory",
+                "lat": 12.444661,
+                "lon": -11.951324,
+                "description": "Autrefois considérée comme sacrée et interdite d'accès pour certains rituels, la cascade est aujourd'hui un site touristique important qui contribue à l'économie locale.",
+                "image": "KD2.jpg"
+            },
+            {
+                "name": "Le puits de la grande mosquée de Kédougou",
+                "lat":  12.554244,
+                "lon": -12.176548,
+                "description": "Le puits du quartier de la mosquée de Kédougou occupe une place centrale dans la vie sociale et religieuse de la communauté. on disait que l’eau possédait des vertus magiques, comme celle de faire revenir les étrangers à Kédougou et de soigner les maux de ventre.",
+                "image": "KD3.jpg"
+            },
+            {
+                "name": "La cascade de Dindéfélo",
+                "lat":  12.365039,
+                "lon": -12.323744,
+                "description": "Dindéfélo, une cascade emblématique du pays Bassari, était autrefois considérée comme habitée par des esprits, interdisant son accès. Des sacrifices rituels ont ensuite permis aux populations locales de s'y installer et de faire du site un lieu touristique prisé.",
+                "image": "KD4.jpg"
+            },
+            {
+                "name": "La rivière de Diara",
+                "lat": 12.713266,
+                "lon": -12.778859,
+                "description": "La rivière de Diara, située dans le département de Salémata, est une source de vie pour de nombreux villages environnants. Elle joue un rôle important sur le plan culturel, notamment dans les rites de purification des circoncis. De plus, elle est considérée comme thérapeutique, son eau étant utilisée pour soigner des maladies attribuées à la sorcellerie, selon les traditions locales.",
+                "image": "KD5.jpg"
+            },
+            {
+                "name": "Le puits de Salémata",
+                "lat":  12.633929,
+                "lon": -12.819961,
+                "description": "Le puits de Salémata, surnommé puits du destin, est un symbole sacré pour les habitants du village et des environs. Creusé par Mamadou Diouldé SALL dans les années 1948-1949, il est béni par les ancêtres et fournit de l'eau à plusieurs villages. Ce puits est essentiel non seulement pour les besoins quotidiens, mais aussi pour les rituels culturels et religieux. Par exemple, il est utilisé pour laver la mariée lors des mariages et dans les cérémonies d'initiation des Bassaris. Considéré comme sacré, les villageois respectent des règles sur son utilisation pour préserver ses ressources avant la saison des pluies. En somme, ce puits incarne la vie spirituelle et culturelle des communautés locales.",
+                "image": "KD5.jpg"
+            }
+        ];
+
+        // Ajout des marqueurs à la carte
+        var markersLayer = new L.LayerGroup(); // Layer to contain search results
+        map.addLayer(markersLayer);
+
+        locations.forEach(function(location) {
+            var marker = L.marker([location.lat, location.lon])
+                .bindPopup('<b>' + location.name + '</b><br>' + location.description + '<br><img src="' + location.image + '" alt="' + location.name + '" style="width:100%;">');
+            markersLayer.addLayer(marker);
+        });
+
+        // Ajout de la barre de recherche
+        var controlSearch = new L.Control.Search({
+            layer: markersLayer,
+            initial: false,
+            zoom: 17,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+        controlSearch.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        // Ajout du contrôle de calques pour basculer entre les cartes
+        var baseMaps = {
+            "Google Satellite Hybrid": googleSatelliteHybrid,
+            "OpenStreetMap": openStreetMap
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+    </script>
+</body>
+</html>
